@@ -7,7 +7,7 @@ models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
-@app.post("/users/")
+@app.post("/register/")
 def create_user(username: str, name: str, password: str):
     db = SessionLocal()
     user = models.User(username=username, name=name, password=password)
@@ -16,6 +16,13 @@ def create_user(username: str, name: str, password: str):
     db.refresh(user)
     db.close()
     return user
+
+@app.post("/login/")
+def login(username: str, password: str):
+    db = SessionLocal()
+    user = db.query(models.User).filter(models.User.username == username, models.User.password == password).first()
+    db.close()
+    return user 
 
 @app.put("/users/{user_id}")
 def update_user(user_id: int, username: str = None, name: str = None, password: str = None):
